@@ -1,10 +1,20 @@
 **/scratch
 **/tmp
 *.zip
-stol*
 
-# exclude trained model
+# runtime logs
+jupyter.log
+CarND-Traffic-Sign-Classifier-Project/logs/
+
+# local copies
+*Copy*.ipynb
+stolen*
+
+
+# exclude trained model and tensorboard
 CarND-LeNet-Lab/lenet.*
+CarND-Traffic-Sign-Classifier-Project/VGG16.*
+CarND-Traffic-Sign-Classifier-Project/lenet.*
 
 **/MNIST_data
 

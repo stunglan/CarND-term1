@@ -15,8 +15,17 @@ stolen*
 CarND-LeNet-Lab/lenet.*
 CarND-Traffic-Sign-Classifier-Project/VGG16.*
 CarND-Traffic-Sign-Classifier-Project/lenet.*
+CarND-Traffic-Sign-Classifier-Project/LeNet.*
 
 **/MNIST_data
+
+# ML data files
+data
+.ipynb_checkpoints
+*.h5
+models
+*.swp
+*.p
 
 #emacs backup files
 *~

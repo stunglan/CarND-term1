@@ -39,7 +39,6 @@ def telemetry(sid, data):
     image = Image.open(BytesIO(base64.b64decode(imgString)))
     image_array = np.asarray(image)
     newimage = cv2.resize(image_array,(80,160))
-    newimage = cv2.cvtColor(newimage,cv2.COLOR_BGR2RGB)
     image_array = newimage
     print(image_array.shape)
     transformed_image_array = image_array[None, :, :, :]

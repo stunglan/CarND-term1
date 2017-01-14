@@ -1,0 +1,24 @@
+def pick_randomly_positioned_crop(image, angle):
+      default_top = 50
+      default_left = 10
+      crop_width = 300
+      crop_height = 90
+
+      x_delta = random.uniform(-10, 10)
+      y_delta = random.uniform(-10, 10)
+
+      cropped_image = image.crop((
+          default_left + x_delta,
+          default_top + y_delta,
+          default_left + crop_width + x_delta,
+          default_top + crop_height + y_delta,
+      ))
+
+      angle_shift_per_horizontal_pixel = 0.002
+      adjusted_angle = angle + (x_delta * angle_shift_per_horizontal_pixel)
+
+      return cropped_image, adjusted_angle
+
+
+
+  img_brightness = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)return img_brightness

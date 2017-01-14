@@ -22,7 +22,7 @@ CarND-Traffic-Sign-Classifier-Project/LeNet.*
 # ML data files
 data
 .ipynb_checkpoints
-*.h5
+#*.h5
 models
 *.swp
 *.p

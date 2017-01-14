@@ -40,7 +40,6 @@ def telemetry(sid, data):
     image_array = np.asarray(image)
     newimage = cv2.resize(image_array,(80,160))
     newimage = cv2.cvtColor(newimage,cv2.COLOR_BGR2RGB)
-    newimage = cv2.normalize(newimage,newimage, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
     image_array = newimage
     print(image_array.shape)
     transformed_image_array = image_array[None, :, :, :]

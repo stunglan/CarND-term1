@@ -29,7 +29,6 @@ def read_image(filename):
     newimage = cv2.imread(filename)
     newimage = cv2.resize(newimage,image_shape)
     newimage = cv2.cvtColor(newimage,cv2.COLOR_BGR2RGB)
-    newimage = cv2.normalize(newimage,newimage, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
     return newimage
 
 def process_line(path,line):

@@ -29,7 +29,7 @@ In the pre-processing I struggled most with the shearing, but I had help from fe
 I did not collect any statistics about the data, steering angles, lightning and such, and could probably succeed faster had I done this.
 
 ### Network summary
-‘’’
+```
 ____________________________________________________________________________________________________
 Layer (type)                     Output Shape          Param #     Connected to
 ====================================================================================================
@@ -80,7 +80,9 @@ dense_3 (Dense)                  (None, 1)             51          elu_10[0][0]
 Total params: 149,349
 Trainable params: 149,349
 Non-trainable params: 0
-‘’’
+
+
+```
 
 
 

@@ -13,6 +13,7 @@ from flask import Flask, render_template
 from io import BytesIO
 import cv2
 
+import math
 from keras.models import model_from_json
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array
 
@@ -37,16 +38,27 @@ def telemetry(sid, data):
     # The current image from the center camera of the car
     imgString = data["image"]
     image = Image.open(BytesIO(base64.b64decode(imgString)))
+
     image_array = np.asarray(image)
-    newimage = cv2.resize(image_array,(80,160))
-    image_array = newimage
-    print(image_array.shape)
+
+    # crop the image
+    top = math.ceil(image_array.shape[0]*0.30)
+    bot = math.ceil(image_array.shape[0]-image_array.shape[0]*0.1)
+    image_array = image_array[top:bot, :]
+
+    # color the image
+    image_array = cv2.cvtColor(image_array, cv2.COLOR_RGB2YUV)
+    
+    # resize the image
+    rows,cols = 20,40
+    image_array = cv2.resize(image_array,(cols,rows))
+    
     transformed_image_array = image_array[None, :, :, :]
     # This model currently assumes that the features of the model are just the images. Feel free to change this.
     steering_angle = float(model.predict(transformed_image_array, batch_size=1))
     # The driving model currently just outputs a constant throttle. Feel free to edit this.
     throttle = 0.2
-    print(steering_angle, throttle)
+    print(steering_angle, throttle,speed)
     send_control(steering_angle, throttle)
 
 

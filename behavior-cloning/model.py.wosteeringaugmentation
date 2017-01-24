@@ -4,7 +4,6 @@
 #  
 
 from keras.models import Sequential
-from keras.optimizers import Adam
 from keras.layers.core import Dense, Dropout, Activation, Flatten, Reshape, Lambda,Dropout
 from keras.layers.convolutional import Convolution2D
 from keras.utils import np_utils
@@ -17,112 +16,58 @@ import numpy as np
 import json
 import argparse
 import time
-import os
-import math
 
 import tensorflow as tf
 tf.python.control_flow_ops = tf
-
-rows = 20
-cols = 40
+tf.logging.set_verbosity(tf.logging.ERROR)
+rows = 40
+cols = 160
 channels = 3
 
-data_dir = './data/udacity_data/'
+data_dir = './data/combined_data/'
+#data_dir = './data/mattew_data/'
 
 test_data_dir = './data/test_data/'
- 
 
-def random_shear(image,steering,prob=0.5):
-    # tnx: https://medium.com/@ksakmann/behavioral-cloning-make-a-car-drive-like-yourself-dc6021152713#.yozfr1waw
-    if np.random.random_sample() > prob:
-        rows = image.shape[0]
-        cols = image.shape[1]
-        shear_range = math.ceil(cols/3)
-        dx = np.random.randint(-shear_range,shear_range+1)
-        random_point = [cols/2+dx,rows/2]
-        pts1 = np.float32([[0,rows],[cols,rows],[cols/2,rows/2]])
-        pts2 = np.float32([[0,rows],[cols,rows],random_point])
-        dsteering = dx/(rows/2) * 360/(2*np.pi*25.0) / 3.0
-        M = cv2.getAffineTransform(pts1,pts2)
-        image = cv2.warpAffine(image,M,(cols,rows),borderMode=1)
-        steering +=dsteering
-    return image,steering
-
-
-def random_flip(im,angle,prob=0.5):
-    if np.random.random_sample() > prob:
-        return np.fliplr(im),angle * -1.0
-    else:
-        return im,angle
-
-    
+# TODO: import the test data
 
 def read_image(filename):
+    
     newimage = Image.open(filename)
+    newimage = newimage.resize((160,80))
     image_array = np.asarray(newimage)
+    image_array = image_array[30:70, 0:160]
+    image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2YUV)   
+    image_array = cv2.GaussianBlur(image_array, (5,5), 0)
+    
+    
     return image_array
 
-def process_image(image_array,y):
-    # crop the image
-    top = math.ceil(image_array.shape[0]*0.30)
-    bot = math.ceil(image_array.shape[0]-image_array.shape[0]*0.1)
-    image_array = image_array[top:bot, :]
-
-    # color the image
-    image_array = cv2.cvtColor(image_array, cv2.COLOR_RGB2YUV)
-
-    # randomly shear the image
-    image_array,y = random_shear(image_array,y)
-
-    # resize the image
-    image_array = cv2.resize(image_array,(cols,rows))
-    # flip randomly the image
-
-    image_array,y = random_flip(image_array,y)
-    
-
-    return image_array,y
 
 def load_data(X,y,path):
     print('start loading data...')
     t = time.process_time()
-    side_camera_adjustment = .23
+    side_camera_adjustment = .3*np.random.random_sample()
+    i = 0
     f = open(path + '/driving_log.csv')
     for line in f:
         line = line.split(',')
-
-        # center camera
-        im = read_image(path+'/'+line[0].strip()) # center image
-        angle = float(line[3])
+        im = read_image(path+'/'+line[0].strip())
+        #print('im shape: ',im.shape)
         X.append(im)
+        angle = float(line[3])
         y.append(angle)
-
         #left camera
         if line[1].strip():
-            im = read_image(path+'/'+line[1].strip())
-            angle = angle + side_camera_adjustment # if this close, steer to the right
-            X.append(im)
-            y.append(angle)
-
-            
+            X.append(read_image(path+'/'+line[1].strip()))
+            y.append(angle - side_camera_adjustment)
         #right camera
         if line[2].strip():
-            im = read_image(path+'/'+line[2].strip())
-            angle = angle - side_camera_adjustment # if this close, steer to the right
-            X.append(im)
-            y.append(angle)
-            
+            X.append(read_image(path+'/'+line[2].strip()))
+            y.append(angle + side_camera_adjustment)
+    f.close()
     elapsed_time = time.process_time() - t
     print('end loading data ---~> {}'.format(elapsed_time))
-    print('mean y before augumentation ', np.mean(y))
-
-    for i in range(len(y)):
-        
-        # augument the image
-        X[i],y[i] = process_image(X[i],y[i])
-
-    print('mean y after augumentation ', np.mean(y))
-    f.close()
     return X,y
         
 
@@ -153,36 +98,29 @@ def create_nvidia_model():
     # Flatten the input to the next layer
     model.add(Flatten())
     # Apply dropout to reduce overfitting
-    model.add(Dropout(.5))
+    model.add(Dropout(.2))
     model.add(act())
     # Fully connected layer
     model.add(Dense(512))
     # More dropout
     model.add(Dropout(.5))
     model.add(act())
-    # Fully connected layer with one output dimension (representing the steering angle).
+    # Fully connected layer with one output dimension (representing the speed).
     model.add(Dense(1))
+    
+    model.compile('adam', 'mean_squared_error', ['accuracy'])
     return model
+
+
 
 
 if __name__ == "__main__":
 
     # command line argument
     parser = argparse.ArgumentParser()
-    # how much output
     parser.add_argument('-v','--verbosity',default=1,help='how much output',type=int, choices=[0, 1, 2])
-    # add new data
-    parser.add_argument('-a','--add',help='add a data directory')
     args = parser.parse_args()
 
-    # test if the data directory exist
-    if args.add:
-        data_dir = args.add
-        if not os.path.isdir(data_dir):
-            print('directory does not exist {}'.format(data_dir))
-    print('loading data from {}'.format(data_dir))
-    
-        
     # load the data 
     X = []
     y = []
@@ -192,20 +130,14 @@ if __name__ == "__main__":
     if args.verbosity >= 1:
         print('X.shape: ',X.shape)
         print('Y.shape: ',y.shape)
+
     
     # build the model
     mymodel = create_nvidia_model()
 
-    # load weigths if we add data
-    if args.add:
-        print('adding to existing weights')
-        mymodel.load_weights('model.h5')
-    
-    # compile the model
-    adam = Adam(lr=0.001)
-    mymodel.compile(loss='mean_squared_error',optimizer=adam)
     # train the model
-    history = mymodel.fit(X,y,nb_epoch=50,shuffle=True, batch_size=256, verbose=1,validation_split=0.1)
+    history = mymodel.fit(X,y,nb_epoch=5,shuffle=True, batch_size=64, verbose=1,validation_split=0.1)
+    #history = mymodel.fit(X,y,nb_epoch=5, shuffle=True,verbose=1,validation_split=0.1)
 
     # display the model
     if args.verbosity >= 2:
@@ -236,7 +168,7 @@ if __name__ == "__main__":
         y_prediction = mymodel.predict(X_test,verbose=1)
         
         for i in range(len(y_prediction)):
-            print('predictions vs actual: {}: {:+5.3f} should be {:+5.3f}'.format(i, y_prediction[i][0], y_test[i]))
+            print('predictions vs actual: {}: {:5.3f} should be {:5.3f}'.format(i, y_prediction[i][0], y_test[i]))
             
             
     # Explicitly reap session to avoid an AttributeError sometimes thrown by

@@ -29,3 +29,14 @@ python drive.py model.json
 If you're using Docker for this project: docker run -it --rm -p 4567:4567 -v `pwd`:/src udacity/carnd-term1-starer-kit python drive.py model.json or docker run -it --rm -p 4567:4567 -v ${pwd}:/src udacity/carnd-term1-starer-kit python drive.py model.json. Port 4567 is used by the simulator to communicate.
 
 Once the model is up and running in drive.py, you should see the car move around (and hopefully not off) the track!
+
+
+log:
+* used learne
+
+
+
+list of articles:
+* [ADAM: A METHOD FOR STOCHASTIC OPTIMIZATION] (https://arxiv.org/pdf/1412.6980v8.pdf)
+* [End-to-End Deep Learning for Self-Driving Cars] (https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/)
+* [Behavioral Cloning — make a car drive like yourself] (https://medium.com/@ksakmann/behavioral-cloning-make-a-car-drive-like-yourself-dc6021152713#.yozfr1waw)

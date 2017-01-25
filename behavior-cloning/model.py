@@ -142,24 +142,38 @@ def create_nvidia_model():
     # ELU http://image-net.org/challenges/posters/JKU_EN_RGB_Schwarz_poster.pdf
     act = ELU
     
-    # 8x8 convolution (kernel) with 4x4 stride over 16 output filters
-    model.add(Convolution2D(16, 8, 8, subsample=(4, 4), border_mode="same"))
+    
+    model.add(Convolution2D(24, 5, 5, subsample=(2, 2), border_mode="same"))
     model.add(act())
-    # 5x5 convolution (kernel) with 2x2 stride over 32 output filters
-    model.add(Convolution2D(32, 5, 5, subsample=(2, 2), border_mode="same"))
+
+    model.add(Convolution2D(36, 5, 5, subsample=(2, 2), border_mode="same"))
     model.add(act())
-    # 5x5 convolution (kernel) with 2x2 stride over 64 output filters
-    model.add(Convolution2D(64, 5, 5, subsample=(2, 2), border_mode="same"))
-    # Flatten the input to the next layer
+    
+    model.add(Convolution2D(48, 5, 5, subsample=(2, 2), border_mode="same"))
+    model.add(act())
+    
+    model.add(Convolution2D(64, 3, 3, subsample=(2, 2), border_mode="same"))
+    model.add(act())
+
+    model.add(Convolution2D(64, 3, 3, subsample=(2, 2), border_mode="same"))
+    model.add(act())
+    
     model.add(Flatten())
-    # Apply dropout to reduce overfitting
+    model.add(act())
+
     model.add(Dropout(.5))
     model.add(act())
-    # Fully connected layer
-    model.add(Dense(512))
-    # More dropout
+
+    model.add(Dense(100))
+    model.add(act())
+
+    model.add(Dense(50))
+    model.add(act())
+
     model.add(Dropout(.5))
     model.add(act())
+    
+    
     # Fully connected layer with one output dimension (representing the steering angle).
     model.add(Dense(1))
     return model

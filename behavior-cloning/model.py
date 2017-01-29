@@ -102,7 +102,7 @@ def load_data(X,y,path):
             im = read_image(path+'/'+line[1].strip())
             angle = angle + side_camera_adjustment # if this close, steer to the right
             X.append(im)
-            y.append(angle)
+
 
             
         #right camera

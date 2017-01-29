@@ -206,7 +206,8 @@ if __name__ == "__main__":
     if args.verbosity >= 1:
         print('X.shape: ',X.shape)
         print('Y.shape: ',y.shape)
-    
+
+        
     # build the model
     mymodel = create_nvidia_model()
 

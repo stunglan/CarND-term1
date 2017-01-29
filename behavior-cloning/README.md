@@ -9,6 +9,9 @@ I used the provided dataset in the course materian, including the left and right
 ###Network
 I fairly early chose the [NVIDIA] (https://arxiv.org/pdf/1412.6980v8.pdf)  network for training my network, which I modified slightly. I also tried a VGG16, but that did not immediate improve the performance so I stuck to the NVIDIA network. The original network has 9 layers including a normalisation layer, 5 convolutional layers - three 5x5 kernels with 24,36 and 48 output depths, and two 3x3 layers with both 64-output depth – flattened the model and then lastly 2 fully connected layers. I modified the network by adding a dropout layer after the flattening and the second fully connected layer, both with a probability of 0.5.
 
+### Training
+Keras is used to train the network. The validation data are handled by keras fit method, using a 10% validation_split. I used an epoch number of 50, but see that the loss are not improved after epoch no 30
+
 ### Image pre-processing
 The steering angle for the left and right camera is adjusted slightly to adjust for their positioning. I then crop the image 30% on the top and 10% at the bottom. I then change the colormap from RGB to YUV. Most pictures are when the road is straight ahead, to increase the training set when steering is needed I shear the images and the steering angle accordingly, I do this for approximately 50% of the images. I also flip circa 50% of the pictures from left to right to avoid a too biased training for left turns. I resize the picture down to a 20 rows by 40 columns picture.
 

@@ -1,4 +1,4 @@
-# P3 project in Self-Driving Car nanodegree
+# P3 - Project in Self-Driving Car nanodegree
 
 ## Explanation of the structure of my network and training approach.
 

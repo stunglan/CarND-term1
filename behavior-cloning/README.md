@@ -25,11 +25,11 @@ To improve on recovery I added randomly sheared images with steering angles to n
 
 The steering angle for the left and right camera is adjusted slightly to adjust for their positioning. I then crop the image 30% on the top and 10% at the bottom. I then change the colormap from RGB to YUV. Most pictures are when the road is straight ahead, see figure:
 
-![Raw steering angle](./rawdist.png?raw=true)
+![rawdist](./rawdist.png?raw=true)
 
 To increase the training set when steering is needed I shear the images and the steering angle accordingly, I do this for approximately 50% of the images. I also flip circa 50% of the pictures from left to right to avoid a too biased training for left turns, this adds recovery steering angles normalized for left and right turns.
 
-![Normalized steering angle](./normdist.png?raw=true)
+![normdist](./normdist.png?raw=true)
 
 Lastly I downsized the pictures down to a 20 rows by 40 columns picture to increase speed of the training.
 

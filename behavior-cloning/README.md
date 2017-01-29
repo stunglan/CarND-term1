@@ -4,19 +4,19 @@
 
 
 ### Data capture
-I used the provided dataset in the course materian, including the left and right camera. In addition, I drove the simulator myself with a MacBook and mouse, I collected two dataset with two rounds. I loaded the datasets by storing and loading the tensors.
+I used the provided data set in the course material, including the left and right camera. In addition, I drove the simulator myself with a MacBook and mouse, I collected two data set with two rounds. I loaded the data sets by storing and loading the tensors.
 
 ###Network
-I fairly early chose the [NVIDIA] (https://arxiv.org/pdf/1412.6980v8.pdf)  network for training my network, which I modified slightly. I also tried a VGG16, but that did not immediate improve the performance so I stuck to the NVIDIA network. The original network has 9 layers including a normalisation layer, 5 convolutional layers - three 5x5 kernels with 24,36 and 48 output depths, and two 3x3 layers with both 64-output depth – flattened the model and then lastly 2 fully connected layers. I modified the network by adding a dropout layer after the flattening and the second fully connected layer, both with a probability of 0.5.
+I fairly early chose the [NVIDIA] (https://arxiv.org/pdf/1412.6980v8.pdf)  network for training my network, which I modified slightly. I also tried a VGG16, but that did not immediate improve the performance so I stuck to the NVIDIA network. The original network has 9 layers including a normalization layer, 5 convolutional layers - three 5x5 kernels with 24,36 and 48 output depths, and two 3x3 layers with both 64-output depth – flattened the model and then lastly 2 fully connected layers. I modified the network by adding a dropout layer after the flattening and the second fully connected layer, both with a probability of 0.5.
 
 ### Training
-Keras is used to train the network. The validation data are handled by keras fit method, using a 10% validation_split. I used an epoch number of 50, but see that the loss are not improved after epoch no 30
+    Keras is used to train the network. The validation data are handled by keras fit method, using a 10% validation_split. I used an epoch number of 50, but see that the loss curve flattens after 10 ![losscurve](./losscurve.png). I mode some test images and steering angles to a different directory to test the prediction for some random samples. I use the Adam optimizer with a learning rate set at 0.001.
 
 ### Image pre-processing
 The steering angle for the left and right camera is adjusted slightly to adjust for their positioning. I then crop the image 30% on the top and 10% at the bottom. I then change the colormap from RGB to YUV. Most pictures are when the road is straight ahead, to increase the training set when steering is needed I shear the images and the steering angle accordingly, I do this for approximately 50% of the images. I also flip circa 50% of the pictures from left to right to avoid a too biased training for left turns. I resize the picture down to a 20 rows by 40 columns picture.
 
 ### Method
-I struggled quite a bit. Firstly, I tried using only my data, but the dataset that I got was poor, and it was hard to drive the car. I then decided to use the dataset from the course material to ensure that I had some proper data.
+I struggled quite a bit. Firstly, I tried using only my data, but the data set that I got was poor, and it was hard to drive the car. I then decided to use the data set from the course material to ensure that I had some proper data.
 
 During development, I used a simplified network model, and promptly forgot that I simplified it. I then struggled a with fine tuning the pre-processing, reading up on what other students did and wondered why they got the car to run, and I did not. I finally got the car around the track, but very wobbly. And when I was cleaning up the code I discovered that was using the simplified network model, some of the jerkiness disappeared when I reintroduced the full network. I also tried a VGG16 network, without a pre-trained model, this did not perform better so I did not pursue that more.
 

@@ -29,8 +29,6 @@ cols = 40
 channels = 3
 
 
-data_dir = './data/myno1/'
-data_dir = './data/mattew_data/'
 data_dir = './data/udacity_data/'
 
 test_data_dir = './data/test_data/'

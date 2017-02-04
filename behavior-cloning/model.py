@@ -19,6 +19,7 @@ import argparse
 import time
 import os
 import math
+from sklearn.model_selection import train_test_split
 
 import tensorflow as tf
 tf.python.control_flow_ops = tf
@@ -27,14 +28,18 @@ rows = 20
 cols = 40
 channels = 3
 
+
+data_dir = './data/myno1/'
+data_dir = './data/mattew_data/'
 data_dir = './data/udacity_data/'
 
 test_data_dir = './data/test_data/'
  
 
-def random_shear(image,steering,prob=0.5):
+def random_shear(image,steering,prob=0.8):
     # tnx: https://medium.com/@ksakmann/behavioral-cloning-make-a-car-drive-like-yourself-dc6021152713#.yozfr1waw
-    if np.random.random_sample() > prob:
+    #print('steering: ',steering)
+    if np.random.random_sample() > prob and steering < 0.01:
         rows = image.shape[0]
         cols = image.shape[1]
         shear_range = math.ceil(cols/3)
@@ -79,7 +84,6 @@ def process_image(image_array,y):
     # flip randomly the image
 
     image_array,y = random_flip(image_array,y)
-    
 
     return image_array,y
 
@@ -102,8 +106,7 @@ def load_data(X,y,path):
             im = read_image(path+'/'+line[1].strip())
             angle = angle + side_camera_adjustment # if this close, steer to the right
             X.append(im)
-
-
+            y.append(angle)
             
         #right camera
         if line[2].strip():
@@ -117,15 +120,25 @@ def load_data(X,y,path):
     print('mean y before augumentation ', np.mean(y))
 
     for i in range(len(y)):
-        
         # augument the image
         X[i],y[i] = process_image(X[i],y[i])
 
     print('mean y after augumentation ', np.mean(y))
     f.close()
     return X,y
-        
 
+
+# generate function for model.fit_generator
+def generate_batch(X, y, batch_size):
+    x_batch = np.zeros((batch_size, rows, cols, channels))
+    y_batch = np.zeros(batch_size)
+    while 1:
+        for i in range(batch_size):
+            i_line = np.random.randint(len(y))
+            x_batch[i] = X[i_line]
+            y_batch[i] = y[i_line]
+        yield x_batch, y_batch
+                
 def create_nvidia_model():
     """The nividia model 
     http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf
@@ -201,11 +214,19 @@ if __name__ == "__main__":
     X = []
     y = []
     X,y = load_data(X,y,data_dir)
+    print('type X: ',type(X))
+    print('is list X: ',isinstance(X,list))
+    
     X = np.array(X).astype('float32')
     y = np.array(y).astype('float32')
     if args.verbosity >= 1:
         print('X.shape: ',X.shape)
         print('Y.shape: ',y.shape)
+
+
+
+    # split the training data and the validation data
+    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.1, random_state=42)
 
         
     # build the model
@@ -220,8 +241,13 @@ if __name__ == "__main__":
     adam = Adam(lr=0.001)
     mymodel.compile(loss='mean_squared_error',optimizer=adam)
     # train the model
-    history = mymodel.fit(X,y,nb_epoch=50,shuffle=True, batch_size=256, verbose=1,validation_split=0.1)
-
+    #history = mymodel.fit(X,y,nb_epoch=50,shuffle=True, batch_size=256, verbose=1,validation_split=0.1)
+    history = mymodel.fit_generator(generate_batch(X_train, y_train, 250),
+                                  samples_per_epoch=250 * 100,
+                                  nb_epoch=50, verbose=1,
+                                  validation_data=generate_batch(X_val, y_val, 250),
+                                  nb_val_samples=len(y_val)
+      )
     # display the model
     if args.verbosity >= 2:
         print(mymodel.summary())

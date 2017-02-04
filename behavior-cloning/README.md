@@ -18,6 +18,8 @@ I moved some test images and steering angles to a different directory to test th
 
 To improve on recovery I added randomly sheared images with steering angles to navigate back to the middle of the road. I did not add explicit error recovery video sequences.
 
+#####Edit:
+After feedback from the reviewer I changed the code so that it use fit_generator() function rather than the fit() function in keras. This also implicated that I had to change the way I split training and validation data.
 
 
 ### Image pre-processing

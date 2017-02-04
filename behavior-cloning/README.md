@@ -16,7 +16,7 @@ Keras is used to train the network. The validation data are handled by keras fit
 
 I moved some test images and steering angles to a different directory to test the prediction for some random samples. I use the Adam optimizer with a learning rate set at 0.001.
 
-To improve on recovery I added randomly sheared images with steering angles to navigate back to the middle of the road. I did not add explicit error recovery video sequences.
+To improve on recovery I added randomly sheared images with steering angles to navigate back to the middle of the road. I did not add any video sequence with where I explicit recorded me doing any recovery.
 
 #####Edit:
 After feedback from the reviewer I changed the code so that it use fit_generator() function rather than the fit() function in keras. This also implicated that I had to change the way I split training and validation data.
